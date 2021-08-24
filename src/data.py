@@ -106,16 +106,16 @@ class Brats2020Dataset2020(Dataset):
 
     def __getitem__(self, index):
 
-        img, target = nib.load(self.images_seg[index]), nib.load(
-            self.images_t1c[index])
+        img, target = , nib.load(self.images_t1c[index]), nib.load(self.images_seg[index])
         
         img, target = img.get_fdata(), target.get_fdata()
-        target = ((target == 1) | (target == 4)).astype('float32')
+        print(img.shape)
+        # target = ((target == 1) | (target == 4)).astype('float32')
 
-        if self.transform:
-            img = self.transform(img)
-
+        # if self.transform:
+        #     img = self.transform(img)
         return img, target
+
 
     def __repr__(self):
         fmt_str = 'Dataset ' + self.__class__.__name__ + '\n'
