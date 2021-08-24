@@ -28,7 +28,8 @@ from src.data import Brats2020Dataset2020
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-x,y = Brats2020Dataset2020(root = ROOT, train=True, transform=None, target_transform=None, download=True)
+training_set = Brats2020Dataset2020(root = ROOT, train=True, transform=None , download=True)
+
 
 
 

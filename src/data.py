@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import datasets
-import os 
+import os
+import numpy as np
 
 
 class Brats2020Dataset2020(Dataset):
@@ -11,13 +12,12 @@ class Brats2020Dataset2020(Dataset):
     OUT_FILE = 'miccai_train.zip'
     UNZIP_FOLDER = 'dataset/miccai_train'
 
-    def __init__(self, root, train=True, transform=None, target_transform=None, download=False):
+    def __init__(self, root, train=True, transform=None, download=False):
         self.root = os.path.expanduser(root)
         print(self.root)
         self.transform = transform
-        self.target_transform = target_transform
         self.train = train  # training set or test set
-        self.UNZIP_FOLDER = os.path.join(self.root,self.UNZIP_FOLDER)
+        self.UNZIP_FOLDER = os.path.join(self.root, self.UNZIP_FOLDER)
 
         # Creating necessary Directories
         self.make_dirs()
@@ -25,18 +25,29 @@ class Brats2020Dataset2020(Dataset):
         if download and not self._check_exists():
             self.download()
             self.extract()
+            self.arrange()
 
         if not self._check_exists():
             raise RuntimeError('Dataset not found.' +
                                ' You can use download=True to download it')
 
+        self.all_files = glob(os.path.join(
+            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz")
+        self.images_t1c = np.array(
+            sorted([file for file in all_files if file.endswith('t1ce.nii.gz')]))
+        self.images_seg = np.array(
+            sorted([file for file in all_files if file.endswith('seg.nii.gz')]))
 
-    def __len__(self):
-        # if self.train:
-        #     return len(self.train_data)
-        # else:
-        #     return len(self.test_data)
-        return 2
+        np.random.seed(42)
+        self.perm = np.random.permutation(len(self.images_t1c))
+        self.split = int(0.8 * len(perm))
+
+        if self.train:
+            self.images_t1c = self.images_t1c[perm[:split]]
+            self.images_seg = self.images_seg[perm[:split]]
+        else:
+            self.images_t1c = self.images_t1c[perm[split:]]
+            self.images_seg = self.images_seg[perm[split:]]
 
     def _check_exists(self):
         return os.path.exists(self.UNZIP_FOLDER)
@@ -45,19 +56,13 @@ class Brats2020Dataset2020(Dataset):
         dirslist = [self.UNZIP_FOLDER]
         for dir_ in dirslist:
             if not os.path.exists(dir_):
-                os.mkdir 
+                os.mkdir
 
     def download(self):
-        # Downloading the Dataset
         import gdown
-        print("Starting Download !! ")
-
-        # try:
+        print("Dwonload Started !!!")
         gdown.download(self.URL, output=None, quiet=False)
-        # except:
-            # gdown.download(self.URL, quiet=False)
-
-        print('Done!')
+        print("Dwonload Finished !!!")
 
     def extract(self):
 
@@ -65,9 +70,9 @@ class Brats2020Dataset2020(Dataset):
         from tqdm import tqdm
         print("Unzipping the File")
 
-        with ZipFile(file=os.path.join(self.root ,self.OUT_FILE)) as zip_file:
+        with ZipFile(file=os.path.join(self.root, self.OUT_FILE)) as zip_file:
             for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
-                zip_file.extract(member=file, path=self.UNZIP_FOLDER)
+                zip_file.extract(member=file, os.path.join(self.root, 'dataset'))
 
         print("Done")
 
@@ -75,41 +80,31 @@ class Brats2020Dataset2020(Dataset):
         from glob import glob
         # Removing the Zipped File
         print("Removing the Zipped File")
-        os.remove(self.OUT_FILE)
+        try:
+            os.remove(os.path.join(self.root, self.OUT_FILE))
+        except:
+            pass
         print("Removing the unwated files")
 
         folder_prefix = "BraTS20_Training"
-        all_files = glob(os.path.join(sself.UNZIP_FOLDER )+ "/{instance_folder}*/{instance_folder}*.nii.gz")
-
-        for i in range(all_files):
+        self.all_files = glob(os.path.join(
+            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz")
+        for i in range(self.all_files):
             if not i.endswith('t1ce.nii.gz') and not i.endswith('seg.nii.gz'):
                 os.remove(i)
 
-   
+    def __len__(self):
+        return len(self.images_t1c)
 
     def __getitem__(self, index):
-        """
-        Args:
-            index (int): Index
 
-        Returns:
-            tuple: (image, target) where target is index of the target class.
-        # """
-        # if self.train:
-        #     img, target = self.train_data[index], self.train_labels[index]
-        # else:
-        #     img, target = self.test_data[index], self.test_labels[index]
+        img, target = nib.load(self.images_seg[index]), nib.load(
+            self.images_t1c[index])
+        img, target = img.get_fdata(), target.get_fdata()
 
-        # img = wrapper(img)
-        # img = Image.fromarray(img, mode='L')
-
-        # if self.transform:  # check for not None
-        #     img = self.transform(img)
-
-        # if self.target_transform:
-        #     target = self.target_transform(target)
-        img = None
-        target = None
+        target = ((target == 1) | (target == 4)).astype('float32')
+        if self.transform:
+            img = self.transform(img)
 
         return img, target
 
@@ -122,7 +117,5 @@ class Brats2020Dataset2020(Dataset):
         tmp = '    Transforms (if any): '
         fmt_str += '{0}{1}\n'.format(
             tmp, self.transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
-        tmp = '    Target Transforms (if any): '
-        fmt_str += '{0}{1}'.format(
-            tmp, self.target_transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
+
         return fmt_str
