@@ -2,9 +2,16 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import datasets
-import os
 import numpy as np
+
+import os
+from glob import glob
+
+import gdown
 import nibabel as nib
+from zipfile import ZipFile
+from tqdm import tqdm
+
 
 
 class Brats2020Dataset2020(Dataset):
@@ -60,15 +67,13 @@ class Brats2020Dataset2020(Dataset):
                 os.mkdir
 
     def download(self):
-        import gdown
         print("Dwonload Started !!!")
         gdown.download(self.URL, output=None, quiet=False)
         print("Dwonload Finished !!!")
 
     def extract(self):
 
-        from zipfile import ZipFile
-        from tqdm import tqdm
+
         print("Unzipping the File")
 
         with ZipFile(file=os.path.join(self.root, self.OUT_FILE)) as zip_file:
@@ -79,7 +84,6 @@ class Brats2020Dataset2020(Dataset):
         print("Done")
 
     def arrange(self):
-        from glob import glob
         # Removing the Zipped File
         print("Removing the Zipped File")
         try:
@@ -104,9 +108,10 @@ class Brats2020Dataset2020(Dataset):
 
         img, target = nib.load(self.images_seg[index]), nib.load(
             self.images_t1c[index])
+        
         img, target = img.get_fdata(), target.get_fdata()
-
         target = ((target == 1) | (target == 4)).astype('float32')
+
         if self.transform:
             img = self.transform(img)
 
