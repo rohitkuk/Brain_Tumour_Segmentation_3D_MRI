@@ -50,7 +50,12 @@ class Brats2020Dataset2020(Dataset):
         # Downloading the Dataset
         import gdown
         print("Starting Download !! ")
-        gdown.download(self.URL, quiet=False)
+
+        # try:
+        gdown.download(self.URL, output=None, quiet=False)
+        # except:
+            # gdown.download(self.URL, quiet=False)
+
         print('Done!')
 
     def extract(self):
