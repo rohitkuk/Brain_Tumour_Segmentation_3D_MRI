@@ -8,8 +8,8 @@ import os
 class Brats2020Dataset2020(Dataset):
 
     URL = 'https://drive.google.com/u/0/uc?id=122AF3SFPhp3wUu4QBnoQMJR2BzPmWcdq&export=download'
-    OUT_FILE = 'miccai_brats.zip'
-    UNZIP_FOLDER = 'dataset/miccai_brats'
+    OUT_FILE = 'miccai_train.zip'
+    UNZIP_FOLDER = 'dataset/miccai_train'
 
     def __init__(self, root, train=True, transform=None, target_transform=None, download=False):
         self.root = os.path.expanduser(root)
