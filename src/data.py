@@ -2,20 +2,25 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import datasets
+import os 
 
 
 class Brats2020Dataset2020(Dataset):
 
     URL = 'https://drive.google.com/u/0/uc?id=122AF3SFPhp3wUu4QBnoQMJR2BzPmWcdq&export=download'
-    URL = 'https://drive.google.com/uc?id=0B9P1L--7Wd2vNm9zMTJWOGxobkU'
     OUT_FILE = 'miccai_brats.zip'
     UNZIP_FOLDER = 'dataset/miccai_brats'
 
     def __init__(self, root, train=True, transform=None, target_transform=None, download=False):
         self.root = os.path.expanduser(root)
+        print(self.root)
         self.transform = transform
         self.target_transform = target_transform
         self.train = train  # training set or test set
+        self.UNZIP_FOLDER = os.path.join(self.root,self.UNZIP_FOLDER)
+
+        # Creating necessary Directories
+        self.make_dirs()
 
         if download and not self._check_exists():
             self.download()
@@ -25,27 +30,27 @@ class Brats2020Dataset2020(Dataset):
             raise RuntimeError('Dataset not found.' +
                                ' You can use download=True to download it')
 
-        if self.train:
-            self.train_data, self.train_labels = torch.load(
-                os.path.join(self.root, self.processed_folder, self.training_file))
-        else:
-            self.test_data, self.test_labels = torch.load(
-                os.path.join(self.root, self.processed_folder, self.test_file))
 
     def __len__(self):
-        if self.train:
-            return len(self.train_data)
-        else:
-            return len(self.test_data)
+        # if self.train:
+        #     return len(self.train_data)
+        # else:
+        #     return len(self.test_data)
+        return 2
 
     def _check_exists(self):
-        return os.path.exists(os.path.join(self.root, UNZIP_FOLDER))
+        return os.path.exists(self.UNZIP_FOLDER)
+
+    def make_dirs(self):
+        dirslist = [self.UNZIP_FOLDER]
+        for dir_ in dirslist:
+            if not os.path.exists(dir_): os.mkdir 
 
     def download(self):
         # Downloading the Dataset
         import gdown
-        print("Starting Dwonload !! ")
-        gdown.download(URL, OUT_FILE, quiet=False, )
+        print("Starting Download !! ")
+        gdown.download(self.URL, quiet=False)
         print('Done!')
 
     def extract(self):
@@ -56,7 +61,7 @@ class Brats2020Dataset2020(Dataset):
 
         with ZipFile(file=file_name) as zip_file:
             for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
-                zip_file.extract(member=OUT_FILE, path=UNZIP_FOLDER)
+                zip_file.extract(member=os.path.join(self.roots ,self.OUT_FILE), path=self.UNZIP_FOLDER)
 
         print("Done")
 
@@ -64,11 +69,11 @@ class Brats2020Dataset2020(Dataset):
         from glob import glob
         # Removing the Zipped File
         print("Removing the Zipped File")
-        os.remove(OUT_FILE)
+        os.remove(self.OUT_FILE)
         print("Removing the unwated files")
 
         folder_prefix = "BraTS20_Training"
-        all_files = glob(os.path.join(self.root + UNZIP_FOLDER )+ "/{instance_folder}*/{instance_folder}*.nii.gz")
+        all_files = glob(os.path.join(sself.UNZIP_FOLDER )+ "/{instance_folder}*/{instance_folder}*.nii.gz")
 
         for i in range(all_files):
             if not i.endswith('t1ce.nii.gz') and not i.endswith('seg.nii.gz'):
