@@ -44,7 +44,8 @@ class Brats2020Dataset2020(Dataset):
     def make_dirs(self):
         dirslist = [self.UNZIP_FOLDER]
         for dir_ in dirslist:
-            if not os.path.exists(dir_): os.mkdir 
+            if not os.path.exists(dir_):
+                os.mkdir 
 
     def download(self):
         # Downloading the Dataset
@@ -66,7 +67,7 @@ class Brats2020Dataset2020(Dataset):
 
         with ZipFile(file=os.path.join(self.root ,self.OUT_FILE)) as zip_file:
             for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
-                zip_file.extract(member=os.path.join(self.root ,self.OUT_FILE), path=self.UNZIP_FOLDER)
+                zip_file.extract(member=file, path=self.UNZIP_FOLDER)
 
         print("Done")
 
