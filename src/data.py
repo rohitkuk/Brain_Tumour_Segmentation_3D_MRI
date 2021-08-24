@@ -18,7 +18,7 @@ class Brats2020Dataset2020(Dataset):
 
     URL = 'https://drive.google.com/uc?id=1fjhJKi6Cs71MpbTa_u4oHHKF3rO41F97&export=download'
     OUT_FILE = 'micca_train_2.zip'
-    UNZIP_FOLDER = 'dataset/micca_train_2'
+    UNZIP_FOLDER = 'dataset/miccai_train'
 
     def __init__(self, root, train=True, transform=None, download=False):
         self.root = os.path.expanduser(root)
