@@ -72,7 +72,7 @@ class Brats2020Dataset2020(Dataset):
 
         with ZipFile(file=os.path.join(self.root, self.OUT_FILE)) as zip_file:
             for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
-                zip_file.extract(member=file, os.path.join(self.root, 'dataset'))
+                zip_file.extract(member=file, path = os.path.join(self.root, 'dataset'))
 
         print("Done")
 
