@@ -42,9 +42,9 @@ class Brats2020Dataset2020(Dataset):
         self.all_files = glob(os.path.join(
             self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz")
         self.images_t1c = np.array(
-            sorted([file for file in all_files if file.endswith('t1ce.nii.gz')]))
+            sorted([file for file in self.all_files if file.endswith('t1ce.nii.gz')]))
         self.images_seg = np.array(
-            sorted([file for file in all_files if file.endswith('seg.nii.gz')]))
+            sorted([file for file in self.all_files if file.endswith('seg.nii.gz')]))
 
         np.random.seed(42)
         self.perm = np.random.permutation(len(self.images_t1c))
