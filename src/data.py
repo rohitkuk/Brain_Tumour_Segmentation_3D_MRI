@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from torchvision import datasets
 import os
 import numpy as np
+import nibabel as nib
 
 
 class Brats2020Dataset2020(Dataset):
@@ -72,7 +73,8 @@ class Brats2020Dataset2020(Dataset):
 
         with ZipFile(file=os.path.join(self.root, self.OUT_FILE)) as zip_file:
             for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
-                zip_file.extract(member=file, path = os.path.join(self.root, 'dataset'))
+                zip_file.extract(
+                    member=file, path=os.path.join(self.root, 'dataset'))
 
         print("Done")
 
@@ -87,9 +89,11 @@ class Brats2020Dataset2020(Dataset):
         print("Removing the unwated files")
 
         folder_prefix = "BraTS20_Training"
+
         self.all_files = glob(os.path.join(
-            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz")
-        for i in range(self.all_files):
+            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz".format(instance_folder=folder_prefix))
+
+        for i in self.all_files:
             if not i.endswith('t1ce.nii.gz') and not i.endswith('seg.nii.gz'):
                 os.remove(i)
 
