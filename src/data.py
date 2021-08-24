@@ -64,7 +64,7 @@ class Brats2020Dataset2020(Dataset):
         from tqdm import tqdm
         print("Unzipping the File")
 
-        with ZipFile(file=file_name) as zip_file:
+        with ZipFile(file=os.path.join(self.roots ,self.OUT_FILE)) as zip_file:
             for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist())):
                 zip_file.extract(member=os.path.join(self.roots ,self.OUT_FILE), path=self.UNZIP_FOLDER)
 
