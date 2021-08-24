@@ -16,9 +16,9 @@ from tqdm import tqdm
 
 class Brats2020Dataset2020(Dataset):
 
-    URL = 'https://drive.google.com/u/0/uc?id=122AF3SFPhp3wUu4QBnoQMJR2BzPmWcdq&export=download'
-    OUT_FILE = 'miccai_train.zip'
-    UNZIP_FOLDER = 'dataset/miccai_train'
+    URL = 'https://drive.google.com/uc?id=1fjhJKi6Cs71MpbTa_u4oHHKF3rO41F97&export=download'
+    OUT_FILE = 'miccai_train_2.zip'
+    UNZIP_FOLDER = 'dataset/miccai_train_2'
 
     def __init__(self, root, train=True, transform=None, download=False):
         self.root = os.path.expanduser(root)
