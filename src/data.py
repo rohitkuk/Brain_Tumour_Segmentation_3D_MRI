@@ -22,7 +22,6 @@ class Brats2020Dataset2020(Dataset):
 
     def __init__(self, root, train=True, transform=None, download=False):
         self.root = os.path.expanduser(root)
-        print(self.root)
         self.transform = transform
         self.train = train  # training set or test set
         self.UNZIP_FOLDER = os.path.join(self.root, self.UNZIP_FOLDER)
@@ -39,8 +38,11 @@ class Brats2020Dataset2020(Dataset):
             raise RuntimeError('Dataset not found.' +
                                ' You can use download=True to download it')
 
+        self.folder_prefix = "BraTS20_Training"
+
         self.all_files = glob(os.path.join(
-            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz")
+            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz".format(instance_folder=self.folder_prefix))
+        
         self.images_t1c = np.array(
             sorted([file for file in self.all_files if file.endswith('t1ce.nii.gz')]))
         self.images_seg = np.array(
@@ -92,10 +94,10 @@ class Brats2020Dataset2020(Dataset):
             pass
         print("Removing the unwated files")
 
-        folder_prefix = "BraTS20_Training"
+        self.folder_prefix = "BraTS20_Training"
 
         self.all_files = glob(os.path.join(
-            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz".format(instance_folder=folder_prefix))
+            self.UNZIP_FOLDER) + "/{instance_folder}*/{instance_folder}*.gz".format(instance_folder=self.folder_prefix))
 
         for i in self.all_files:
             if not i.endswith('t1ce.nii.gz') and not i.endswith('seg.nii.gz'):
@@ -109,13 +111,11 @@ class Brats2020Dataset2020(Dataset):
         img, target =  nib.load(self.images_t1c[index]), nib.load(self.images_seg[index])
         
         img, target = img.get_fdata(), target.get_fdata()
-        print("here")
-        print(img.shape)
 
-        # target = ((target == 1) | (target == 4)).astype('float32')
+        target = ((target == 1) | (target == 4)).astype('float32')
 
-        # if self.transform:
-        #     img = self.transform(img)
+        if self.transform:
+            img = self.transform(img)
         return img, target
 
 
