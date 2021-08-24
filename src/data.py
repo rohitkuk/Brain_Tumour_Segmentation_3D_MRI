@@ -109,7 +109,9 @@ class Brats2020Dataset2020(Dataset):
         img, target =  nib.load(self.images_t1c[index]), nib.load(self.images_seg[index])
         
         img, target = img.get_fdata(), target.get_fdata()
+        print("here")
         print(img.shape)
+
         # target = ((target == 1) | (target == 4)).astype('float32')
 
         # if self.transform:
