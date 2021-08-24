@@ -48,14 +48,14 @@ class Brats2020Dataset2020(Dataset):
 
         np.random.seed(42)
         self.perm = np.random.permutation(len(self.images_t1c))
-        self.split = int(0.8 * len(perm))
+        self.split = int(0.8 * len(self.perm))
 
         if self.train:
-            self.images_t1c = self.images_t1c[perm[:split]]
-            self.images_seg = self.images_seg[perm[:split]]
+            self.images_t1c = self.images_t1c[self.perm[:self.split]]
+            self.images_seg = self.images_seg[self.perm[:self.split]]
         else:
-            self.images_t1c = self.images_t1c[perm[split:]]
-            self.images_seg = self.images_seg[perm[split:]]
+            self.images_t1c = self.images_t1c[self.perm[self.split:]]
+            self.images_seg = self.images_seg[self.perm[self.split:]]
 
     def _check_exists(self):
         return os.path.exists(self.UNZIP_FOLDER)
