@@ -1,11 +1,14 @@
 # Brain_Tumour_Segmentation_3D_MRI
-Brain Tumor Segmentation of 3D MRI Imagery
+
+Implementation of Brain Tumor Segmentation of 3D MRI Imagery in Pytorch.
 
 
 
-
+**Colab Demo Run**
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1KIk6CWy8G-1q2Z3KXdtE4-iOOOeZV-8-?usp=sharing]
 
+
+**Diretory Structre**
 ```
 ├── src
 │   ├── data.py
@@ -22,7 +25,7 @@ Brain Tumor Segmentation of 3D MRI Imagery
 └── requirements.txt
 ```
 
-ToDo:
+**ToDo:**
 - Research - Done
 - Setup Directory Structre and Github - Done
 - Solve for Data Download, Extract and Process - Done
@@ -37,3 +40,4 @@ ToDo:
 - Observe and Fine Tune
 - ReadMe
 - Things to improve
+
