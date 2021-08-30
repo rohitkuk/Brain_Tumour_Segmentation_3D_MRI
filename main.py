@@ -50,8 +50,8 @@ Trasforms = transforms.Compose([
 	transforms.ToTensor()
     ])
 
-training_set = Brats2020Dataset2020(root = ROOT, train=True, transform=Trasforms , download=True)
-validation_set = Brats2020Dataset2020(root = ROOT, train=False, transform=Trasforms , download=False)
+training_set = Brats2020Dataset2020(root = ROOT, train=True, transform=Trasforms , download=True, normalize_=False)
+validation_set = Brats2020Dataset2020(root = ROOT, train=False, transform=Trasforms , download=False, normalize_=False)
 training_loader = DataLoader(training_set, batch_size = BATCH_SIZE, shuffle=True, drop_last=True)
 validation_loader = DataLoader(validation_set, batch_size = BATCH_SIZE, shuffle=True, drop_last=True)
 

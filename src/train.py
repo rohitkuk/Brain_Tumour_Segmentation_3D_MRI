@@ -34,8 +34,10 @@ class modelTrainer:
         total_batches = len(dataloader)
         running_loss = 0.0
         self.optimizer.zero_grad()
+
+        tqdm_iter = tqdm(enumerate(dataloader),
+                         total=len(dataloader), leave=False)
         for idx, (image, target) in enumerate(dataloader):
-            print(f"{phase} epoch: {epoch} | time: {time.strftime('%H:%M:%S')}  Batch_id = {idx}" )
             image = image.to(self.device)
             target = target.to(self.device)
             logits = self.model(image)
@@ -47,21 +49,29 @@ class modelTrainer:
                     self.optimizer.step()
                     self.optimizer.zero_grad()
             running_loss += loss.item()  
+
         epoch_loss = (running_loss * self.accumulation_steps) / total_batches
+
+        tqdm_iter.set_description(f"Phase :: {phase} Epoch : [{epoch + 1}/{self.num_epochs}] ")
+            tqdm_iter.set_postfix(
+                batch_loss="%.2f" % loss.item(),
+                epoch_loss= "%.2f" % epoch_loss
+            )
         return epoch_loss
         
     def train(self):
         for epoch_idx in range(self.num_epochs):
             train_loss = self.epoch(epoch_idx, "train")
-            print(f"Loss After Epoch {train_loss}")
+            print(f"Loss After Epoch {epoch_idx+1} :: {train_loss}")
             self.train_loss.append(train_loss)
             if epoch_idx % 3 == 0 :
                 self.save_predtrain_model() 
+        print(f"Training Loss:: {np.mean(self.train_loss)}")
 
             
     def val(self):
         with torch.no_grad():
-            val_loss = self.epoch(epoch_idx, "val")
+            val_loss = self.epoch(1, "val")
             print(f"Validation Loss {val_loss}" )
 
     def load_predtrain_model(self):
