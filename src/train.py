@@ -7,6 +7,8 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 import warnings
 from torch.optim import Adam
+from tqdm import tqdm
+
 warnings.simplefilter("ignore")
 
 class modelTrainer:
@@ -50,13 +52,13 @@ class modelTrainer:
                     self.optimizer.zero_grad()
             running_loss += loss.item()  
 
-        epoch_loss = (running_loss * self.accumulation_steps) / total_batches
+            epoch_loss = (running_loss * self.accumulation_steps) / total_batches
 
-        tqdm_iter.set_description(f"Phase :: {phase} Epoch : [{epoch + 1}/{self.num_epochs}] ")
+            tqdm_iter.set_description(f"Phase :: {phase} Epoch : [{epoch + 1}/{self.num_epochs}] ")
             tqdm_iter.set_postfix(
-                batch_loss="%.2f" % loss.item(),
-                epoch_loss= "%.2f" % epoch_loss
-            )
+                    batch_loss="%.2f" % loss.item(),
+                    epoch_loss= "%.2f" % epoch_loss
+                )
         return epoch_loss
         
     def train(self):
